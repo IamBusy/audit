@@ -121,3 +121,5 @@ class DBHelper:
         c.close()
         self._conn.commit()
 
+
+db_helper = DBHelper()
