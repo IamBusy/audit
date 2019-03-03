@@ -37,7 +37,6 @@ class DBHelper:
                   id integer primary key AUTOINCREMENT,
                   year  varchar,
                   company_id varchar, 
-                  wordcounter_id integer,
                   size varchar,
                   audit_fee varchar,
                   auditor varchar,
