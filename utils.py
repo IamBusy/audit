@@ -92,7 +92,7 @@ class DBHelper:
         :return:
         '''
         c = self._conn.cursor()
-        values = ','.join(map(lambda k: "'%s'" % k, obj.keys()))
+        values = ','.join(map(lambda k: "'%s'" % obj[k], obj.keys()))
         res = c.execute('insert into {0} ({1}) values ({2})'.format(table, ','.join(obj.keys()), values))
         c.close()
         self._conn.commit()
@@ -108,13 +108,17 @@ class DBHelper:
         :return:
         '''
         c = self._conn.cursor()
-        values = ','.join(map(lambda k: "%s='%s'" % (k, obj[k]), obj.keys()))
-        res = c.execute('update {0} set {1} where {2};'.format(table, values, self._parse_query(query)))
+        values = ','.join(map(lambda k: " %s='%s' " % (k, obj[k]), obj.keys()))
+        # print('update {0} set {1} where {2};'.format(table, values, self._parse_query(query)))
+        res = c.execute('update {0} set {1} where 1=1 {2};'.format(table, values, self._parse_query(query)))
+
         c.close()
         self._conn.commit()
         return res
 
     def delete(self, table, query):
-        pass
-        # TODO
+        c = self._conn.cursor()
+        c.execute('delete from {0} where 1=1 {1}'.format(table, self._parse_query(query)))
+        c.close()
+        self._conn.commit()
 
