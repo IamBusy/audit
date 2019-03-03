@@ -12,7 +12,7 @@ import sqlite3
 DB_NAME = 'audit.db'
 
 TABLE_COMPANY = 'companies'
-TABLE_REPORTER = 'reporters'
+TABLE_REPORT = 'reports'
 TABLE_WORD_COUNTER = 'word_counters'
 
 
@@ -35,22 +35,30 @@ class DBHelper:
                 drop table if exists {0};
                 create table {0} (
                   id integer primary key AUTOINCREMENT,
-                  code varchar ,
-                  name varchar 
+                  year  varchar,
+                  company_id varchar, 
+                  wordcounter_id integer,
+                  size varchar,
+                  audit_fee varchar,
+                  auditor varchar,
+                  audit_change integer,
+                  audit_opinion varchar
                 )
-                '''.format(TABLE_REPORTER))
+                '''.format(TABLE_REPORT))
 
         sqls.append('''
                         drop table if exists {0};
                         create table {0} (
                           id integer primary key AUTOINCREMENT,
-                          code varchar ,
-                          name varchar 
+                          report_id integer,
+                          word varchar,
+                          counter integer
                         )
                         '''.format(TABLE_WORD_COUNTER))
         c = self._conn.cursor()
         for sql in sqls:
-            c.execute(sql)
+            for s in sql.split(';'):
+                c.execute(s)
         c.close()
         self._conn.commit()
 
