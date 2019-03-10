@@ -82,6 +82,14 @@ class DBHelper:
         self._conn.commit()
         return res
 
+    def find(self, table, query):
+        c = self._conn.cursor()
+        c.execute('select * from {0} where 1=1 {1} limit 1'.format(table, self._parse_query(query)))
+        res = c.fetchone()
+        c.close()
+        self._conn.commit()
+        return res
+
     def insert(self, table, obj):
         '''
         :param table:
@@ -120,6 +128,15 @@ class DBHelper:
         c.execute('delete from {0} where 1=1 {1}'.format(table, self._parse_query(query)))
         c.close()
         self._conn.commit()
+
+
+def str_trim(s):
+    return str(s).strip()
+
+
+def str_is_nan(s):
+    s = str(s).strip()
+    return len(s) == 0 or s == 'NaN' or s == 'nan'
 
 
 db_helper = DBHelper()
