@@ -14,7 +14,7 @@ DB_NAME = 'audit.db'
 TABLE_COMPANY = 'companies'
 TABLE_REPORT = 'reports'
 TABLE_WORD_COUNTER = 'word_counters'
-
+Big_Auditor = {"普华永道", "德勤", "安永", "毕马威", "瑞华", "立信", "天健", "信永中和", "大华", "大信", "致同", "天职国际"}
 
 class DBHelper:
     def __init__(self):
@@ -120,4 +120,6 @@ class DBHelper:
         c.execute('delete from {0} where 1=1 {1}'.format(table, self._parse_query(query)))
         c.close()
         self._conn.commit()
+
+
 
