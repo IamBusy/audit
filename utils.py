@@ -15,6 +15,8 @@ TABLE_COMPANY = 'companies'
 TABLE_REPORT = 'reports'
 TABLE_WORD_COUNTER = 'word_counters'
 
+big_auditor = {'德勤'}
+
 
 class DBHelper:
     def __init__(self):
@@ -41,6 +43,7 @@ class DBHelper:
                   audit_fee varchar,
                   auditor varchar,
                   audit_change integer,
+                  audit_is_big integer,
                   audit_opinion varchar
                 )
                 '''.format(TABLE_REPORT))

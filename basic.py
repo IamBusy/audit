@@ -11,7 +11,7 @@
 import os
 import tabula
 import utils
-from utils import db_helper, TABLE_COMPANY, TABLE_REPORT, TABLE_WORD_COUNTER
+from utils import db_helper, TABLE_COMPANY, TABLE_REPORT, TABLE_WORD_COUNTER, big_auditor
 
 
 def process_reporters(dir):
@@ -20,14 +20,17 @@ def process_reporters(dir):
             if '.pdf' not in f:
                 continue
             if 'fee' in root:
-                # fee_process_reporters(os.path.join(root, f))
-                pass
-            elif 'change' in root:
+                fee_process_reporters(os.path.join(root, f))
+
+    for root, dirs, files in os.walk(dir):
+        for f in files:
+            if '.pdf' not in f:
+                continue
+            if 'change' in root:
                 change_process_reporters(os.path.join(root, f))
                 pass
-            elif 'opinion' in root:
-                pass
-            else:
+            elif 'BadOpinion' in f:
+                opinion_process_reporters(os.path.join(root, f))
                 pass
 
 
@@ -37,17 +40,38 @@ def change_process_reporters(f):
         year = file_name[:4]
         df = tabula.read_pdf(f, pages='all')
         for index, row in df.iterrows():
+            date = utils.str_trim(row[2])
             if '-' in date:
-                date = utils.str_trim(row[2])
                 code = str(utils.str_trim(row[0])).split(' ')[-1]
                 company = db_helper.find(TABLE_COMPANY, {'code': code})
                 if not company:
                     continue
-                reporter = db_helper.find(TABLE_REPORT, {'company_id': company['id'], 'year': year})
+                reporter = db_helper.find(TABLE_REPORT, {'company_id': company[1], 'year': year})
                 if not reporter:
                     continue
-                db_helper.update(TABLE_REPORT, {'audit_change', 1}, {'id': reporter['id']})
+                db_helper.update(TABLE_REPORT, {'audit_change', 1}, {'id': reporter[1]})
     except Exception as e:
+        print("File[%s] process error\n" % f)
+        print(e)
+        pass
+
+
+def opinion_process_reporters(f):
+    try:
+        with open(f) as fp:
+            for line in fp:
+                words = line.strip().split(',')
+                year = words[0]
+                code = words[1]
+                company = db_helper.find(TABLE_COMPANY, {'code': code})
+                if not company:
+                    continue
+                reporter = db_helper.find(TABLE_REPORT, {'company_id': company[1], 'year': year})
+                if not reporter:
+                    continue
+                utils.db_helper.update(TABLE_REPORT, {'audit_opinion': '1'}, {'id': reporter[1]})
+    except Exception as e:
+        print("File[%s] process error\n" % f)
         pass
 
 
@@ -112,14 +136,20 @@ def fee_process_reporters(f):
 
 
 def fee_save_obj(obj):
+    is_big = 0
+    for key in big_auditor:
+        if key in obj['audit_name']:
+            is_big = 1
+            break
     reporter = {
         'year': obj['year'],
         'auditor': obj['audit_name'],
-        'audit_fee': obj['audit_fee']}
+        'audit_fee': obj['audit_fee'],
+        'audit_is_big': is_big
+    }
 
     companies = db_helper.select(utils.TABLE_COMPANY, {
         'code': obj['code'],
-
     })
     if len(companies) > 0:
         company_id = companies[0][0]
