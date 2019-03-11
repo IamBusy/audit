@@ -15,7 +15,7 @@ TABLE_COMPANY = 'companies'
 TABLE_REPORT = 'reports'
 TABLE_WORD_COUNTER = 'word_counters'
 
-big_auditor = {'德勤'}
+big_auditor = {"普华永道", "德勤", "安永", "毕马威", "瑞华", "立信", "天健", "信永中和", "大华", "大信", "致同", "天职国际"}
 
 
 class DBHelper:
@@ -143,3 +143,4 @@ def str_is_nan(s):
 
 
 db_helper = DBHelper()
+
