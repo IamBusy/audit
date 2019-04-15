@@ -15,12 +15,12 @@ from utils import db_helper, TABLE_COMPANY, TABLE_REPORT, TABLE_WORD_COUNTER, bi
 
 
 def process_reporters(dir):
-    for root, dirs, files in os.walk(dir):
-        for f in files:
-            if '.pdf' not in f:
-                continue
-            if 'fee' in root:
-                fee_process_reporters(os.path.join(root, f))
+    # for root, dirs, files in os.walk(dir):
+    #     for f in files:
+    #         if '.pdf' not in f:
+    #             continue
+    #         if 'fee' in root:
+    #             fee_process_reporters(os.path.join(root, f))
 
     for root, dirs, files in os.walk(dir):
         for f in files:
@@ -38,7 +38,7 @@ def change_process_reporters(f):
     try:
         file_name = f.split('/')[-1]
         year = file_name[:4]
-        df = tabula.read_pdf(f, pages='all')
+        df = tabula.read_pdf(f, pages='all', multiple_tables=False)
         for index, row in df.iterrows():
             date = utils.str_trim(row[2])
             if '-' in date:
@@ -46,10 +46,10 @@ def change_process_reporters(f):
                 company = db_helper.find(TABLE_COMPANY, {'code': code})
                 if not company:
                     continue
-                reporter = db_helper.find(TABLE_REPORT, {'company_id': company[1], 'year': year})
+                reporter = db_helper.find(TABLE_REPORT, {'company_id': company[0], 'year': year})
                 if not reporter:
                     continue
-                db_helper.update(TABLE_REPORT, {'audit_change', 1}, {'id': reporter[1]})
+                db_helper.update(TABLE_REPORT, {'audit_change': 1}, {'id': reporter[0]})
     except Exception as e:
         print("File[%s] process error\n" % f)
         print(e)
@@ -66,10 +66,10 @@ def opinion_process_reporters(f):
                 company = db_helper.find(TABLE_COMPANY, {'code': code})
                 if not company:
                     continue
-                reporter = db_helper.find(TABLE_REPORT, {'company_id': company[1], 'year': year})
+                reporter = db_helper.find(TABLE_REPORT, {'company_id': company[0], 'year': year})
                 if not reporter:
                     continue
-                utils.db_helper.update(TABLE_REPORT, {'audit_opinion': '1'}, {'id': reporter[1]})
+                utils.db_helper.update(TABLE_REPORT, {'audit_opinion': '1'}, {'id': reporter[0]})
     except Exception as e:
         print("File[%s] process error\n" % f)
         pass

@@ -54,7 +54,11 @@ class DBHelper:
                           id integer primary key AUTOINCREMENT,
                           report_id integer,
                           word varchar,
-                          counter integer
+                          counter integer,
+                          code varchar ,
+                          year varchar ,
+                          name varchar ,
+                          group_name varchar 
                         )
                         '''.format(TABLE_WORD_COUNTER))
         c = self._conn.cursor()
